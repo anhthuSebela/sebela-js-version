@@ -7,6 +7,7 @@ let sketch = function(p){
   let glossColor = p.color(255, 255, 255, 80);
 
 
+  // overlay for camera
   p.setup = function() {
     canvas = p.createCanvas(640, 480); //1.375 w, 1.04 h
     canvas.id("canvas");
