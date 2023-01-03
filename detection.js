@@ -19,6 +19,7 @@ function gotFaces(results){
   // console.log(detections.multiFaceLandmarks[0][0]);
 }
 
+//Creating a new 'Camera' object
 const camera = new Camera(videoElement, {
   onFrame: async () => {
     await faceMesh.send({image: videoElement});

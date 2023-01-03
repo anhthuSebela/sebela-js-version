@@ -15,5 +15,27 @@
 
 <body>
   <video id="video"></video>
+  <div id="color-scroll">
+    <div class="color-option" style="background-color: #ff0000"></div>
+    <div class="color-option" style="background-color: #00ff00"></div>
+    <div class="color-option" style="background-color: #0000ff"></div>
+    <div class="color-option" style="background-color: #0000ff"></div>
+    <div class="color-option" style="background-color: #0000ff"></div>
+    <script>
+      const colorScroll = document.getElementById("color-scroll");
+    
+      colorScroll.addEventListener("scroll", function() {
+        const colorOptions = this.children;
+        for (const option of colorOptions) {
+          if (option.offsetLeft <= this.scrollLeft && option.offsetLeft + option.offsetWidth > this.scrollLeft) {
+            // option is currently selected
+            const color = option.style.backgroundColor;
+            // Use the color value to update the lipstick filter
+          }
+        }
+      });
+    </script>
+    
+  </div>
 </body>
 </html>
