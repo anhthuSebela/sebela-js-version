@@ -2,10 +2,6 @@ let sketch = function(p){
   let canvas;
   let dMouse = [];
   let closest;
-  let glossWidth = 30;
-  let glossHeight = 15;
-  let glossColor = p.color(255, 255, 255, 80);
-
 
   p.setup = function() {
     canvas = p.createCanvas(640, 480); //1.375 w, 1.04 h
@@ -32,6 +28,7 @@ let sketch = function(p){
 
         // Find the minimum and maximum x and y coordinates of the bounding box
     let minX = Number.MAX_VALUE;
+    let topmostY = Number.MAX_VALUE; // Initialize topmostY to be the maximum possible value
     let minY = Number.MAX_VALUE;
     let maxX = 0;
     let maxY = 0;
@@ -41,6 +38,7 @@ let sketch = function(p){
       let y = detections.multiFaceLandmarks[0][index].y * p.height;
       minX = Math.min(minX, x);
       minY = Math.min(minY, y);
+      topmostY = Math.min(topmostY, y); // Update topmostY if a smaller y-coordinate is encountered
       maxX = Math.max(maxX, x);
       maxY = Math.max(maxY, y);
     }
@@ -49,6 +47,7 @@ let sketch = function(p){
       let x = detections.multiFaceLandmarks[0][index].x * p.width;
       let y = detections.multiFaceLandmarks[0][index].y * p.height;
       minX = Math.min(minX, x);
+      topmostY = Math.min(topmostY, y); // Update topmostY if a smaller y-coordinate is encountered
       minY = Math.min(minY, y);
       maxX = Math.max(maxX, x);
       maxY = Math.max(maxY, y);
@@ -66,6 +65,8 @@ let sketch = function(p){
       }
     }
 
+    
+
     // Calculate the average brightness
     let numPixels = (maxX - minX + 1) * (maxY - minY + 1);
     let averageBrightness = totalBrightness / numPixels;
@@ -73,9 +74,9 @@ let sketch = function(p){
     console.log(`Average brightness: ${averageBrightness}`);
 
 
-    let color1 = p.color(185, 104, 99); // Dark color in RGB color model
-    let color2 = p.color(220, 100, 110); // Medium color in RGB color model
-    let color3 = p.color(215, 180, 170); // Light color in RGB color model
+    let color3 = p.color(176, 84, 79); // Dark color in RGB color model
+    let color2 = p.color(185, 104, 99, 255); // Medium color in RGB color model //the fourth argument is tthe opacaity from 0-255
+    let color1 = p.color(200, 135, 132); // Light color in RGB color model
 
     p.colorMode(p.RGB);
     p.noStroke();
@@ -86,17 +87,23 @@ let sketch = function(p){
       let x = detections.multiFaceLandmarks[0][index].x * p.width;
       let y = detections.multiFaceLandmarks[0][index].y * p.height;
 
-      // Calculate the color for the current vertex based on its y coordinate
-      let t = p.map(y, minY, maxY, 0, 1); // Calculate t based on the y coordinate of the vertex
-      let color = p.lerpColor(color1, color2, t); // Interpolate between color1 and color2 based on t
-      if (t > 0.7) {
-        // If t is greater than 0.5, interpolate between color2 and color3
-        color = p.lerpColor(color2, color3, (t - 0.7) * 2);
+            // Adjust the values of topmostY and maxY to control the shape of the gradient
+      let topmostY = minY + (maxY - minY) * 0.4;  // Start the gradient 30% down from the top of the bounding box
+      let t1 = p.map(y, topmostY, maxY, 0, 1); // Calculate t based on the y coordinate of the vertex
+      let t2 = p.lerp(0, 1, t1); // Interpolate between 0 and 1 based on t1
+      let color;
+      if (t2 < 0.5) {
+        // Interpolate between color3 and color2 based on t2
+        color = p.lerpColor(color3, color2, t2 * 2); 
+      } else {
+        // Interpolate between color2 and color1 based on t2
+        color = p.lerpColor(color2, color1, (t2 - 0.5) * 2); 
       }
       p.fill(color); // Set the fill color for the current vertex
       p.vertex(x, y);
     }
     p.endShape();
+
 
     p.beginShape(p.LINE_LOOP);
     for(let j=0; j<lowerlip.length; j++){
@@ -104,14 +111,10 @@ let sketch = function(p){
       let x = detections.multiFaceLandmarks[0][index].x * p.width;
       let y = detections.multiFaceLandmarks[0][index].y * p.height;
       // Calculate the color for the current vertex based on its y coordinate
-      let t = p.map(y, minY, maxY, 0, 1); // Calculate t based on the y coordinate of the vertex
-      let color = p.lerpColor(color1, color2, t); // Interpolate between color1 and color2 based on t
-      if (t > 0.7) {
-        // If t is greater than 0.#, interpolate between color2 and color3
-        color = p.lerpColor(color2, color3, (t - 0.7) * 2);
-      }
+      let t = p.map(y, topmostY, maxY, 0, 1); // Calculate t based on the y coordinate of the vertex
+      let color = p.lerpColor(color3, color2, t); // Interpolate between color3 and color1 based on t
       p.fill(color); // Set the fill color for the current vertex
-      p.vertex(x, y);
+      p.vertex(x, y);;
     }
     p.endShape();
 
