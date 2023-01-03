@@ -28,3 +28,12 @@ const camera = new Camera(videoElement, {
   height: 480
 });
 camera.start();
+
+
+
+
+
+// TODO: fix front end buttons to work, make scroll bar, fix lag,
+// make things mirrored, make the thing embeddable (i-frame compatible)?
+
+

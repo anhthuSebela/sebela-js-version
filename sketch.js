@@ -3,6 +3,7 @@ let sketch = function(p){
   let dMouse = [];
   let closest;
 
+  // overlay for camera
   p.setup = function() {
     canvas = p.createCanvas(640, 480); //1.375 w, 1.04 h
     canvas.id("canvas");
